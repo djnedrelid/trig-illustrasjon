@@ -1,3 +1,3 @@
 ﻿## trig-illustrasjon
 
-[Start / Begynn her](https://djnedrelid.github.io/Kodekloden/)
+[Start / Begynn her](https://djnedrelid.github.io/trig-illustrasjon/)
