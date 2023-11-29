@@ -1,0 +1,374 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Aim Angle Illustration</title>
+<style type="text/css">
+HTML, BODY {
+	padding: 0px;
+	margin: 0px;
+	cursor: none;
+}
+#AimSceneWrapper {
+	margin: 0px auto;
+	border: 0px solid #999;
+	width: 400px;
+	height: 400px;
+}
+</style>
+<script type="text/javascript">
+var centerXY, rectPos;
+var canvas, canvasBuf, dc, dcBuf;
+var ForwardAngle, ForwardConeLeftRight, CurrentMouseAngle;
+var terrImg, crossImg, ImagesLoaded;
+
+function LoadScene() {
+	// Hent hovedcanvas.
+	canvas = document.getElementById("AimSceneCanvas");
+	dc = canvas.getContext("2d");
+	
+	// Opprett et mellomlager vi kan tegne på.
+	canvasBuf = document.createElement("canvas");
+	canvasBuf.width = 400;
+	canvasBuf.height = 400;
+	dcBuf = canvasBuf.getContext("2d");
+	
+	// Hent senterpunkt.
+	centerXY = [(canvas.width/2),(canvas.height/2)];
+	
+	// Sinusratio 1 = 90° rett opp/fremover.
+	ForwardAngle = Math.sin(90 * (Math.PI/180));
+	ForwardConeLeftRight = [
+		ForwardAngle - Math.sin(9*(Math.PI/180)),
+		ForwardAngle + Math.sin(9*(Math.PI/180))
+	];
+	
+	// Klargjør bilder for illustrasjon.
+	ImagesLoaded = 0;
+	terrImg = document.createElement("img");
+	terrImg.src = "POST_22_beanterr_42x60.png";
+	terrImg.onload = function(){ ImagesLoaded += 1; };
+	crossImg = document.createElement("img");
+	crossImg.src = "POST_22_crosshair_30x30.png";
+	crossImg.onload = function(){ ImagesLoaded += 1; };
+}
+
+function DrawCone() {
+	// Tegn en 9° trakt foran senter.
+	dcBuf.beginPath();
+	dcBuf.moveTo(centerXY[0],centerXY[1]);
+	dcBuf.lineTo(centerXY[0]*ForwardConeLeftRight[0], 0);
+	dcBuf.stroke();
+	dcBuf.beginPath();
+	dcBuf.moveTo(centerXY[0],centerXY[1]);
+	dcBuf.lineTo(centerXY[0]*ForwardConeLeftRight[1], 0);
+	dcBuf.stroke();
+	dcBuf.font = "10px Verdana";
+	dcBuf.fillStyle = "#333";
+	dcBuf.fillText("9°", centerXY[0]-5, centerXY[1]-100);
+}
+
+function DrawMousePointer(MouseX, MouseY) {
+	/*
+	dcBuf.beginPath();
+	dcBuf.arc(MouseX, MouseY, 5, 0, 2 * Math.PI);
+	dcBuf.fillStyle = '#333';
+	dcBuf.fill();
+	*/
+	dcBuf.drawImage(terrImg,MouseX-(42/2),MouseY-(60/2));
+}
+
+function UpdateMouseAngle(MouseX, MouseY) {
+	var cos,sin;
+	sin = MouseY - centerXY[1];
+	cos = MouseX - centerXY[0];
+	
+	// Hent vinkel basert sin og cos.
+	CurrentMouseAngle = Math.atan2(sin, cos);
+	
+	// Konverter til grader.
+	CurrentMouseAngle *= (180/Math.PI);
+	
+	// Kompensasjon for at vi er under typisk 2D miljø hvor 0,0 starter 
+	// ovenfra, vi spinner vinkelen 180° rundt slik at det blir positivt.
+	CurrentMouseAngle -= CurrentMouseAngle*2;
+}
+
+function DrawTriangleToMouse(MouseX, MouseY) {
+	// Tekstfarge.
+	dcBuf.fillStyle = "#666";
+
+	// Tegn Hypotenus/avstand.
+	dcBuf.beginPath();
+	dcBuf.moveTo(centerXY[0],centerXY[1]);
+	dcBuf.lineTo(MouseX, MouseY);
+	dcBuf.stroke();
+	
+	// Tegn Sinus.
+	dcBuf.beginPath();
+	dcBuf.moveTo(MouseX, centerXY[1]);
+	dcBuf.lineTo(MouseX, MouseY);
+	dcBuf.stroke();
+	
+	// Tegn Cosinus.
+	dcBuf.beginPath();
+	dcBuf.moveTo(centerXY[0], centerXY[1]);
+	dcBuf.lineTo(MouseX, centerXY[1]);
+	dcBuf.stroke();
+	
+	// Tegn 90° hjørnet.
+	var SquareSize = 10;
+	var w = SquareSize;
+	var h = SquareSize;
+	var tmp;
+	
+	// Håndter størrelse iht. trang vinkel.
+	tmp = MouseX - centerXY[0];
+	if (tmp < 0) { tmp -= tmp*2; }
+	if (tmp < SquareSize)
+		w = tmp;
+		
+	tmp = MouseY - centerXY[1];
+	if (tmp < 0) { tmp -= tmp*2; }
+	if (tmp < SquareSize)
+		h = tmp;
+	
+	dcBuf.beginPath();
+	if (CurrentMouseAngle >= 0 && CurrentMouseAngle <= 90) {
+		// Første kvadrant.
+		dcBuf.moveTo(MouseX-w, centerXY[1]);
+		dcBuf.lineTo(MouseX-w, centerXY[1]-h);
+		dcBuf.stroke();
+		dcBuf.lineTo(MouseX, centerXY[1]-h);
+		dcBuf.stroke();
+		
+	} else if (CurrentMouseAngle >= 90 && CurrentMouseAngle <= 180) {
+		// Andre kvadrant.
+		dcBuf.moveTo(MouseX+w, centerXY[1]);
+		dcBuf.lineTo(MouseX+w, centerXY[1]-h);
+		dcBuf.stroke();
+		dcBuf.lineTo(MouseX, centerXY[1]-h);
+		dcBuf.stroke();
+		
+	} else if (CurrentMouseAngle >= -180 && CurrentMouseAngle <= -90) {
+		// Tredje kvadrant.
+		dcBuf.moveTo(MouseX+w, centerXY[1]);
+		dcBuf.lineTo(MouseX+w, centerXY[1]+h);
+		dcBuf.stroke();
+		dcBuf.lineTo(MouseX, centerXY[1]+h);
+		dcBuf.stroke();
+		
+	} else {
+		// Fjerde kvadrant.
+		dcBuf.moveTo(MouseX-w, centerXY[1]);
+		dcBuf.lineTo(MouseX-w, centerXY[1]+h);
+		dcBuf.stroke();
+		dcBuf.lineTo(MouseX, centerXY[1]+h);
+		dcBuf.stroke();
+	}
+}
+
+function DrawViewStatusText(MouseX, MouseY) {
+	dcBuf.font = "12px Verdana";
+	dcBuf.fillStyle = "#333";
+	dcBuf.fillText(
+		"Pointer angle: "+ 
+		Math.round(CurrentMouseAngle*100)/100, 
+		5, 
+		15
+	);
+	
+	// Er musepeker (simulerer fienden) innenfor 9°?
+	if (IsAngleWithinCone(MouseX, MouseY, false)) {
+		dcBuf.fillStyle = "#F00";
+		dcBuf.fillText(
+			"Within AIM! ("+ 
+			IsAngleWithinCone(MouseX, MouseY, true) +
+			")", 
+			5, 
+			30
+		);
+	} else {
+		dcBuf.fillStyle = "#060";
+		dcBuf.fillText(
+			"Outside AIM. ("+ 
+			IsAngleWithinCone(MouseX, MouseY, true) +
+			")", 
+			5, 
+			30
+		);
+	}
+	
+	// Er musepeker synlig innenfor 90° synsfelt til hver side?
+	dcBuf.fillStyle = "#666";
+	if (IsAngleWithinVisibility(MouseX, MouseY))
+		dcBuf.fillText("I see you! (<90° = front)", 5, 50);
+	else
+		dcBuf.fillText("I can't see you (behind) ...", 5, 50);
+}
+
+function IsAngleWithinVisibility(MouseX, MouseY) {
+	// Retningsvektoren vår. Vi peker rett opp/frem.
+	// Reverser graden for positiv pga 2D 0,0 ovenfra.
+	var ForwardVector = [
+		Math.cos(-90 * (Math.PI/180)), 
+		Math.sin(-90 * (Math.PI/180))
+	];
+	
+	// Avstandsvektor til fiende.
+	var DistanceVector = [
+		MouseX - centerXY[0], 
+		MouseY - centerXY[1]
+	];
+	
+	// Normaliser avstandsvektoren.
+	var hyp = Math.sqrt(
+		DistanceVector[0]*DistanceVector[0] + 
+		DistanceVector[1]*DistanceVector[1]
+	);
+	DistanceVector[0] = DistanceVector[0] / hyp;
+	DistanceVector[1] = DistanceVector[1] / hyp;
+	
+	// Prikkprodukt av vektorene.
+	var dot = ForwardVector[0]*DistanceVector[0] + 
+		ForwardVector[1]*DistanceVector[1];
+	
+	// Prikkproduktet er på den positive siden 
+	// (opp/fremover) innenfor 90° mot hver side.
+	if (dot > 0)
+		return true;
+
+	return false;
+}
+
+function IsAngleWithinCone(MouseX, MouseY, ReturnTheValueBool) {
+	// Retningsvektoren vår. Vi peker rett opp/frem.
+	// Reverser graden for positiv pga 2D 0,0 ovenfra.
+	var ForwardVector = [
+		Math.cos(-90 * (Math.PI/180)), 
+		Math.sin(-90 * (Math.PI/180))
+	];
+	
+	// Avstandsvektor til fiende.
+	var DistanceVector = [
+		MouseX - centerXY[0], 
+		MouseY - centerXY[1]
+	];
+	
+	// Normaliser avstandsvektoren.
+	var hyp = Math.sqrt(
+		DistanceVector[0]*DistanceVector[0] + 
+		DistanceVector[1]*DistanceVector[1]
+	);
+	DistanceVector[0] = DistanceVector[0] / hyp;
+	DistanceVector[1] = DistanceVector[1] / hyp;
+	
+	// Prikkprodukt av vektorene.
+	var dot = ForwardVector[0]*DistanceVector[0] + 
+		ForwardVector[1]*DistanceVector[1];
+		
+	// Vinkel fra prikkprodukt.
+	var dotAngle = Math.acos(dot) * (180/Math.PI);
+	
+	// Er vinkelen innenfor siktevinkelen vår?
+	if (ReturnTheValueBool)
+		return Math.round(dotAngle*100)/100
+	
+	if (dotAngle <= 9)
+		return true;
+	
+	return false;
+}
+
+function InitialGraphics() {
+	// Initiell grafikk før interaktivitet.
+	dcBuf.fillStyle = "#fff";
+	dcBuf.fillRect(0,0,canvasBuf.width,canvasBuf.height);
+	dcBuf.fillStyle = "#666";
+	dcBuf.font = "12px Verdana";
+	dcBuf.fillText("Move your mouse here for an illustration.", centerXY[0]-120, centerXY[1]+50);
+	dcBuf.lineCap = "round";
+	dcBuf.lineWidth = 2;
+	DrawCone();
+	dcBuf.drawImage(
+		crossImg,
+		centerXY[0]-(30/2),
+		centerXY[1]-(30/2)
+	);
+	dc.drawImage(canvasBuf,0,0);
+}
+
+function WaitForImages() {
+	if (ImagesLoaded < 2)
+		setTimeout("WaitForImages()", 100);
+	else
+		InitialGraphics();
+}
+</script>
+</head>
+<body>
+
+<!-- Sikteområde. -->
+<div id="AimSceneWrapper">
+	<canvas id="AimSceneCanvas" width="400" height="400">
+	Your browser does not support the HTML5 canvas tag.
+	</canvas>
+</div>
+
+<!-- Forbered bruk. -->
+<script type="text/javascript">
+LoadScene();
+WaitForImages();
+
+//
+//	Hendelsesfunksjon for musebevegelse.
+//
+canvas.addEventListener("mousemove",function() {
+	// Oppdater posisjonen til canvas, 
+	// kanskje vindu har blitt strukket på.
+	rectPos = canvas.getBoundingClientRect();
+	var mX = event.clientX-rectPos.left;
+	var mY = event.clientY-rectPos.top;
+	
+	//
+	// Tegn ny grafikk til mellomlager.
+	//
+	dcBuf.fillStyle = "#fff";
+	dcBuf.fillRect(0,0,canvasBuf.width,canvasBuf.height);
+	
+	// Regn ut vinkel til musepeker.
+	UpdateMouseAngle(mX, mY);
+	
+	// Tegn 9° trakten/aimlock vinkel.
+	DrawCone();
+	
+	// Tegn trekant for illustrering av vinkelposisjon/yaw.
+	DrawTriangleToMouse(mX, mY);
+	
+	// Oppdater statustekst om synlighet.
+	DrawViewStatusText(mX, mY);
+	
+	// Tegn museposisjon.
+	DrawMousePointer(mX, mY);
+	
+	// Tegn siktet.
+	dcBuf.drawImage(
+		crossImg,
+		centerXY[0]-(30/2),
+		centerXY[1]-(30/2)
+	);
+	
+	// Flipp mellomlager til frontkontekst/canvas.
+	dc.drawImage(canvasBuf,0,0);
+});
+
+//
+//	Rydd opp når bruker beveger seg vekk.
+//
+canvas.addEventListener("mouseout", function() {
+	InitialGraphics();
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="" rel="stylesheet" type="text/css">
+<script src="" type="text/javascript"></script>
+<title></title>
+</head>
+<body>
+<pre>
+
+	Trigonometri notater.
+	~~~~~~~~~~~~~~~~~~~~
+	
+	Vinkel 0 er i utgangspunktet mot høyre og går i sirkel mot klokka. 
+	Enten 2 ganger PI (radianer) eller 360 grader. Det tas utgangspunkt 
+	i å forholde seg kun til vinkler og trekanter hvor 90 grader oppnås 
+	mellom cosinus og sinus slik at funksjoner virker og ting er "enkelt".
+	
+	
+	
+	Retningsvektorer 
+	~~~~~~~~~~~~~~~~
+	Oppnås med å subtrahere kilde fra mål (B - A) slik at man får avstands-
+	differansen fra kilde til mål. Dersom men kjenner til vinkelen på 
+	opphavsvektor, kan man bruke cos(°), sin(°) for x,y respektivt, for å 
+	finne normaliserte enhetsverdier, klar for prikk- og kryssprodukt. 
+	MERK: Når man bruker cosf/sinf funksjonene i C++ vil disse ha radianer, 
+	mens spillet bruker grader. Konverter fra ° til R med multiplisering 
+	•(π/180), motsatt av •(180/π) man bruker for å konvertere andre veien.  
+	
+	
+	
+	Hypotenus
+	~~~~~~~~~
+	Er lengden på langsiden av en 90 graders vinkel og lengden fra A til B. 
+	Sinus er motliggende katet til vinkelhjørnet, cosinus er hosliggende. 
+	Man kan bruke enten trigfunksjoner eller pytagoras sin læresetning for 
+	å finne hypotenus/avstand/lengde fra A til B.
+	
+	Finne Hypotenus	= 	Kvadratroten av x*x + y*y + z*z 
+				sinus / sin(vinkel)
+	
+	Sinus		=	cosinus * tan(vinkel)
+	Cosinus		=	hypotenus * cos(vinkel)
+
+	Vinkler		=	sinˉ¹(sinus/hypotenus)
+				cosˉ¹(cosinus/hypotenus)
+				tanˉ¹(sinus/cosinus)
+	
+		Multipliser med 180 / PI for konvertering fra R til °.
+		
+			 B(x,y)
+			/|
+		       / |
+		 Hyp  /  |
+		     /   | Sin(y)
+		    /°)  |
+	     A(x,y)/-----| 
+		    Cos(x) 
+	
+	Hyp er lengde og avstand. Et bevegelig punkt flytter seg ved at sinus 
+	og/eller cosinus justerer sine lengder, grad måles i motsatt hjørne.
+	
+	
+	
+	Normalisering
+	~~~~~~~~~~~~~
+	Er å gjøre koordinater til enheter (1 i lengde). Man kan gjøre det når 
+	relativitet er viktigere enn antall og lengder, f.eks. retning. Pass på 
+	at man ikke deler på et omfang som er 0. Normalisering er veldig nyttig 
+	sammen med prikk- og kryssprodukter. Man kan regne ut omfang ved å  
+	bruke pytagoras teorem på vektorens punktdata, deretter dele dem på 
+	det resultatet som resulterer i enhet- verdier og vektorer. 
+	Enhetsverdier kan også brukes direkte i trigfunksjoner som sin og cos.
+	
+	Normalisere	=	o = √(x*x + y*y + z*z)		// Omfang.
+				x / o
+				y / o
+				z / o
+
+	
+	
+	Prikkprodukter
+	~~~~~~~~~~~~~~
+	Hjelper å finne ut ° av forskjell en vektor peker i forhold til andre. 
+	F.eks. om fiende er i synsfeltet til en spiller eller motsatt. Hvis man 
+	bruker normaliserte vektorer er resultatet alltid mellom: 
+	-1 som er lik 180° og 1 som er lik 0°.
+	
+	Prikkprodukt	=	(a.x * b.x) + (a.y * b.y) + (a.z * b.z)
+				>0 er under 90°
+				<0 er over 90°
+				== 0 er lik 90°
+	
+	A og B vil f.eks. være i synsfeltet til flyet hvis >0, men ikke C (<0).
+	
+				(--A--)
+
+	(--B--)	   -----
+		  /     \
+		 /       \
+	   |----|         |----|
+	
+				(--C--)
+	
+	
+	
+	Kryssprodukter
+	~~~~~~~~~~~~~~
+	Kryssproduktet av 2 vektorer gir en vektor som står 90° mellom begge. 
+	Dette er f.eks. brukt til å finne oppover-normalen til overflater.
+	
+	Kryssprodukt	=	c.x = (a.y * b.z) - (a.z * b.y)
+				c.y = (a.z * b.x) - (a.x * b.z)
+				c.z = (a.x * b.y) - (a.y * b.x)
+	
+	Ill. Z = Kryssproduktet av X og Y.
+	
+	|    /
+	|   /
+       Z|  /Y
+	| /
+	|--------
+	    X
+	    
+</pre></body></html>

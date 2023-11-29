@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="" rel="stylesheet" type="text/css">
+<script src="" type="text/javascript"></script>
+<title></title>
+</head>
+<body>
+<pre>
+
+	Utregning av synsvinkel med Counter Strike: Source som eksempel.
+
+	PSEUDOALGORITME FOR SYNSVINKEL
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Krav:
+		- Spillerens og fienders posisjoner i X,Y og gjerne Z.
+		
+	Regn ut (Mål minus(-) Opphav) og normaliser retningsvektor med omfang. 
+	Utfør prikkprodukt mellom mål og spillerens retningsvektor. cosˉ¹(dot) 
+	kan brukes på prikkproduktet for å sjekke nøyaktig utregnet °. Ellers 
+	vil normaliserte verdier i en prikkutregning tilsvare følgende:
+	>0 er under 90°, <0 er over 90°, 0 er lik 90°.
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
+	Spillerens Yaw vinkel, angitt av spill og lar oss regne ut retning på 
+	en svært enkel måte med cos og sin, respektivt x og y i enhetsverdier.
+	° = -111
+	
+	Spillerens posisjon.
+	X = 1598
+	Y = 3160
+	
+
+	//
+	//	SPILLERENS RETNINGSVEKTOR (fremover)
+	//	Denne kan forøvrig også regnes ut på akkurat samme måte som 
+	//	med fiender, dersom man har et referansepunkt/vektor man vil 
+	//	bruke som befinner seg rett foran spilleren. Testet OK. Men 
+	//	i dette tilfellet er det lettere å bruke cos og sin som vil 
+	//	gi ferdig normaliserte verdier for direkte prikkprodukt-bruk.
+	//	
+	X = cos(-111) = -0,3584
+	Y = sin(-111) = -0,9336
+	
+	
+	//
+	//	RETNINGSVEKTORER
+	//	Siden vi vil ha vektor fra oss til fiende, trekker vi fra vår 
+	//	posisjon fra fienden. Viktig å huske å ikke blande sammen 
+	//	retning- og posisjonsvektor her! Prikkproduktet utføres på 
+	//	retning/avstandsvektorer, ikke utgangspunkt! 
+	//
+	SynligFiendeA (burde resultere >0 under 90°):
+	X = 1392	ax = 1392 - 1598	=  -206
+	Y = 3040	ay = 3040 - 3160	=  -120
+	
+	UsynligFiendeB(burde resultere <0 over 90°):
+	X = 1736	bx = 1736 - 1598	=  138
+	Y = 3340	by = 3340 - 3160	=  180
+	
+	
+	//
+	//	NORMALISERING (kun retningsvektorer)
+	//	Dette gjør vektorverdier om til enheter og dermed også 
+	//	vektorene til enhetsvektorer. Utregning av prikkprodukt 
+	//	hviler sterkt på at vi gjør dette på forhånd.
+	//
+	Mål omfang av vektorer.
+	omf_fiendeA = √( ((-206)*(-206)) + ((-120)*(-120)) )	= 238
+	omf_fiendeB = √( (138*138) + (180*180) )		= 227
+	
+	Normaliser vektordata til enheter.
+	x_fiendeA =  (-206) / 238	= -0,8655
+	y_fiendeA =  (-120) / 238	= -0,5042
+	x_fiendeB =     138 / 227	=  0,6079
+	y_fiendeB =     180 / 227	=  0,7929
+	
+	
+	## PRIKKPRODUKT AV ENHETSVEKTORER
+	dot_a = ((-0,3584)*(-0,8655)) + ((-0,9336)*(-0,5042)) 	=  0,7809
+	dot_b = ((-0,3584)*0,6079) + ((-0,9336)*0,7929)		= -0,9581
+	
+	
+				   (--A--) (innenfor 90° synsfelt)
+			
+			   -----
+			  /     \
+			 /       \
+		   |----|         |----|
+	
+	    (--B--) (utenfor 90° synsfelt)
+</pre></body></html>

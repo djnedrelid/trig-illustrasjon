@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>trig-illustration</title>
+<style>
+BODY {
+	font-family: verdana;
+	font-size: 13px;
+}
+</style>
+</head>
+<body>
+
+I made my first aimbot for fun during christmas 2018 to play around with angle calculations, view matrix and all that stuff. Aim Lock with Reduced Recoil (skull/head bone, mbutton5 snap-to-head within a 9° angle / funnel, priority determined by distance and visibility. Simple 3D radar/ESP Overlay (transparent double buffered GDI, no writing or interference of internal performance or graphics).<br><br>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/LFga3X9dnjM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><br>
+<em>(Names were added to the ESP/2D radar after making this vid.)</em><br><br><br><br>
+
+I have created a JavaScript illustration that uses the same math and partly the same formulas as I do in the program (<a href="POST_22_Aim_Angle_Illustration_Trig.html" target="_blank">open</a> in a new window/tab and view its source for more information). Without the funnel limitation, the aim would only jump between the enemies. This requires the user to aim in a general direction first and the software becomes more of a strong snap-to-target assistant and a little more subtle than just auto aiming everywhere.<br><br>
+
+<div style="border:1px solid #999; margin:0px 0px 0px 10px; padding:3px; border-radius:10px; background-color:#fff; width:400px;">
+	<iframe src="POST_22_Aim_Angle_Illustration_Trig.html" width="400" height="400" scrolling="no" style="border:0px; padding:0px; margin:0px; overflow:hidden;"></iframe>
+</div><br><br>
+
+
+Trigonometry math plays a huge part when dealing with aimbots. Normalizing all direction vectors to units makes it practical to take the dot product from those units to calculate the angle difference between the forward player direction vector and enemy location vector. Then it becomes easy to check the 9° funnel. Aiming itself was done with asin and atan functions to find the pitch/yaw angles (I found atan2f in math.h does the heavy lifting of figuring out positive/negative quadrants, atanf doesn't).<br><br>
+
+
+My own trigonometry notes in norwegian during development:<br>
+<a href="POST_22_Trig_notater.htm" target="_blank">Trig notater</a> | 
+<a href="POST_22_Trig_notater_2_(synsvinkler).htm" target="_blank">Trig notater 2 (synsvinkler)</a><br><br>
+
+I may revisit this project again later. For now this post serves as a future reference and a fun illustration.
+
+<div id="createdby"><br>
+	&copy; Dag J Nedrelid
+</div>
+</body>
+</html>
